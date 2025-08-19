@@ -19,7 +19,8 @@ local function makeBuilding(pos: Vector3, size: Vector3, color: Color3)
     p.Anchored = true
     p.Size = size
     p.Position = pos + Vector3.new(0, size.Y/2, 0)
-    p.Material = Enum.Material.SmoothPlastic
+    p.Material = Enum.Material.Glass
+    p.Reflectance = 0.05
     p.Color = color
     p.Name = "Building"
     p.Parent = Workspace
@@ -28,7 +29,8 @@ end
 for x = -260, 260, 60 do
     for z = -260, 260, 60 do
         if math.abs(x) > 20 or math.abs(z) > 20 then
-            makeBuilding(Vector3.new(x, 1, z), Vector3.new(30, math.random(25,70), 30), Color3.fromRGB(180, 180, 200))
+            local tint = Color3.fromRGB(150 + math.random(0,60), 160 + math.random(0,60), 200)
+            makeBuilding(Vector3.new(x, 1, z), Vector3.new(30, math.random(25,70), 30), tint)
         end
     end
 end
@@ -80,6 +82,18 @@ shop.Color = Color3.fromRGB(0, 170, 255)
 shop.Parent = Workspace
 markerBillboard(shop, "Press 1: Speed Boost (60s)")
 
+local shopPrompt = Instance.new("ProximityPrompt")
+shopPrompt.ActionText = "Buy Speed Boost (60s)"
+shopPrompt.ObjectText = "Shop"
+shopPrompt.KeyboardKeyCode = Enum.KeyCode.E
+shopPrompt.HoldDuration = 0
+shopPrompt.RequiresLineOfSight = false
+shopPrompt.Parent = shop
+shopPrompt.Triggered:Connect(function(player)
+    local Remotes = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
+    (Remotes:WaitForChild("RequestPurchase") :: RemoteEvent):FireServer("speed_boost")
+end)
+
 -- Add spin wheel kiosk
 local spin = Instance.new("Part")
 spin.Name = "SpinKiosk"
@@ -89,5 +103,46 @@ spin.Position = Vector3.new(100, 4, -100)
 spin.Color = Color3.fromRGB(255, 170, 0)
 spin.Parent = Workspace
 markerBillboard(spin, "Press 2: Spin Wheel")
+
+local spinPrompt = Instance.new("ProximityPrompt")
+spinPrompt.ActionText = "Spin Wheel"
+spinPrompt.ObjectText = "Spin"
+spinPrompt.KeyboardKeyCode = Enum.KeyCode.F
+spinPrompt.HoldDuration = 0
+spinPrompt.RequiresLineOfSight = false
+spinPrompt.Parent = spin
+spinPrompt.Triggered:Connect(function(player)
+    local Remotes = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
+    (Remotes:WaitForChild("RequestSpin") :: RemoteEvent):FireServer()
+end)
+
+-- Street cleaner mission: spawn litter parts to collect
+local function spawnLitter(position: Vector3)
+    local p = Instance.new("Part")
+    p.Name = "Litter"
+    p.Size = Vector3.new(1, 0.2, 1)
+    p.Position = position
+    p.Anchored = true
+    p.Color = Color3.fromRGB(240, 240, 240)
+    p.Material = Enum.Material.Plastic
+    p.Parent = Workspace
+
+    local prompt = Instance.new("ProximityPrompt")
+    prompt.ActionText = "Pick Up"
+    prompt.ObjectText = "Litter"
+    prompt.KeyboardKeyCode = Enum.KeyCode.G
+    prompt.HoldDuration = 0
+    prompt.RequiresLineOfSight = false
+    prompt.Parent = p
+    prompt.Triggered:Connect(function(player)
+        p:Destroy()
+        local Remotes = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
+        (Remotes:WaitForChild("RequestMissionComplete") :: RemoteEvent):FireServer("cleaner_1")
+    end)
+end
+
+for i = 1, 10 do
+    spawnLitter(Vector3.new(math.random(-200, 200), 1, math.random(-200, 200)))
+end
 
 

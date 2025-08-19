@@ -56,6 +56,8 @@ missionFrame.Size = UDim2.fromOffset(320, 220)
 missionFrame.BackgroundTransparency = 0.2
 missionFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 missionFrame.Parent = screen
+missionFrame.BorderSizePixel = 0
+missionFrame.ClipsDescendants = true
 
 local missionTitle = Instance.new("TextLabel")
 missionTitle.Size = UDim2.new(1, 0, 0, 28)
@@ -65,6 +67,16 @@ missionTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 missionTitle.Font = Enum.Font.GothamBold
 missionTitle.TextScaled = true
 missionTitle.Parent = missionFrame
+
+local function line(parent: Instance)
+    local l = Instance.new("Frame")
+    l.Size = UDim2.new(1, -12, 0, 1)
+    l.Position = UDim2.new(0, 6, 0, 32)
+    l.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    l.BorderSizePixel = 0
+    l.Parent = parent
+end
+line(missionFrame)
 
 local function formatSeconds(s: number): string
     local hours = math.floor(s / 3600)
