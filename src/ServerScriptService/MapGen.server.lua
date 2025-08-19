@@ -7,7 +7,7 @@ local Workspace = game:GetService("Workspace")
 
 local base = Instance.new("Part")
 base.Anchored = true
-base.Size = Vector3.new(300, 2, 300)
+base.Size = Vector3.new(600, 2, 600)
 base.Position = Vector3.new(0, 0, 0)
 base.Name = "Baseplate"
 base.Material = Enum.Material.Concrete
@@ -25,10 +25,10 @@ local function makeBuilding(pos: Vector3, size: Vector3, color: Color3)
     p.Parent = Workspace
 end
 
-for x = -120, 120, 60 do
-    for z = -120, 120, 60 do
+for x = -260, 260, 60 do
+    for z = -260, 260, 60 do
         if math.abs(x) > 20 or math.abs(z) > 20 then
-            makeBuilding(Vector3.new(x, 1, z), Vector3.new(30, math.random(20,50), 30), Color3.fromRGB(180, 180, 200))
+            makeBuilding(Vector3.new(x, 1, z), Vector3.new(30, math.random(25,70), 30), Color3.fromRGB(180, 180, 200))
         end
     end
 end
@@ -46,8 +46,8 @@ local function makeTrigger(name: string, pos: Vector3)
     return t
 end
 
-local startA = makeTrigger("CourierStart", Vector3.new(-40, 1, 0))
-local endB = makeTrigger("CourierEnd", Vector3.new(60, 1, 60))
+local startA = makeTrigger("CourierStart", Vector3.new(-80, 1, -40))
+local endB = makeTrigger("CourierEnd", Vector3.new(160, 1, 160))
 
 -- Optional: visualize markers
 local function markerBillboard(parent: BasePart, text: string)
@@ -69,5 +69,25 @@ end
 
 markerBillboard(startA, "Courier A")
 markerBillboard(endB, "Courier B")
+
+-- Add shop kiosk
+local shop = Instance.new("Part")
+shop.Name = "ShopKiosk"
+shop.Anchored = true
+shop.Size = Vector3.new(8, 8, 8)
+shop.Position = Vector3.new(0, 4, -100)
+shop.Color = Color3.fromRGB(0, 170, 255)
+shop.Parent = Workspace
+markerBillboard(shop, "Press 1: Speed Boost (60s)")
+
+-- Add spin wheel kiosk
+local spin = Instance.new("Part")
+spin.Name = "SpinKiosk"
+spin.Anchored = true
+spin.Size = Vector3.new(8, 8, 8)
+spin.Position = Vector3.new(100, 4, -100)
+spin.Color = Color3.fromRGB(255, 170, 0)
+spin.Parent = Workspace
+markerBillboard(spin, "Press 2: Spin Wheel")
 
 

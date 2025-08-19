@@ -8,6 +8,8 @@ local Remotes = {
     RequestMissionComplete = RemotesFolder:WaitForChild("RequestMissionComplete") :: RemoteEvent,
     RequestPurchase = RemotesFolder:WaitForChild("RequestPurchase") :: RemoteEvent,
     SubmitPromoCode = RemotesFolder:WaitForChild("SubmitPromoCode") :: RemoteEvent,
+    RequestDailyClaim = RemotesFolder:WaitForChild("RequestDailyClaim") :: RemoteEvent,
+    RequestSpin = RemotesFolder:WaitForChild("RequestSpin") :: RemoteEvent,
     TimeChanged = RemotesFolder:WaitForChild("TimeChanged") :: RemoteEvent,
     Notify = RemotesFolder:WaitForChild("Notify") :: RemoteEvent,
     GetProfile = RemotesFolder:WaitForChild("GetProfile") :: RemoteFunction,
@@ -50,7 +52,7 @@ local missionFrame = Instance.new("Frame")
 missionFrame.Name = "Missions"
 missionFrame.AnchorPoint = Vector2.new(1, 0)
 missionFrame.Position = UDim2.fromScale(0.98, 0.15)
-missionFrame.Size = UDim2.fromOffset(300, 180)
+missionFrame.Size = UDim2.fromOffset(320, 220)
 missionFrame.BackgroundTransparency = 0.2
 missionFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 missionFrame.Parent = screen
@@ -116,12 +118,21 @@ createButton("Redeem WELCOME code", 144, function()
     Remotes.SubmitPromoCode:FireServer("WELCOME")
 end)
 
+createButton("Claim Daily", 180, function()
+    Remotes.RequestDailyClaim:FireServer()
+end)
+
+-- Spin wheel quick key: press 2
+local UserInputService = game:GetService("UserInputService")
+
 -- Shop UI shortcut keys
 local UserInputService = game:GetService("UserInputService")
 UserInputService.InputBegan:Connect(function(input, gpe)
     if gpe then return end
     if input.KeyCode == Enum.KeyCode.One then
         Remotes.RequestPurchase:FireServer("speed_boost")
+    elseif input.KeyCode == Enum.KeyCode.Two then
+        Remotes.RequestSpin:FireServer()
     end
 end)
 

@@ -20,6 +20,7 @@ local Remotes = {
 local Types = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Types"))
 
 local PlayerProfiles: {[Player]: Types.PlayerTimeProfile} = {}
+local playerRate = require(script.Parent:WaitForChild("RateLimiter")).new(12, 3)
 
 local STARTER_TIME_SECONDS = 5 * 60 -- 5 minutes starter time
 local MIN_TICK = 1
@@ -105,9 +106,8 @@ end
 
 -- Mission completion will be validated in MissionService; this just awards time
 Remotes.RequestMissionComplete.OnServerEvent:Connect(function(player: Player, payload)
-	-- MissionService should call TimeService.addTime after validation.
-	-- Ignore direct client calls here to keep server-authoritative.
-	Remotes.Notify:FireClient(player, "Mission validation required.")
+	-- Do nothing here. MissionService performs validation and awards time.
+	if not playerRate:allow(player) then return end
 end)
 
 -- Main countdown loop
