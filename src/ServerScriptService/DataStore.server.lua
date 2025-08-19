@@ -10,7 +10,19 @@ local TimeService = require(script.Parent:WaitForChild("TimeService"))
 local STORE_NAME = "InTimeRoleplay_PlayerTime_v1"
 local store = DataStoreService:GetDataStore(STORE_NAME)
 
+local function studioApisAllowed(): boolean
+	if game:GetService("RunService"):IsStudio() then
+		-- Respect Studio setting; user must enable in Game Settings → Security
+		local ok = pcall(function()
+			store:GetAsync("__ping__")
+		end)
+		return ok
+	end
+	return true
+end
+
 local function loadPlayer(player: Player)
+	if not studioApisAllowed() then return end
 	local key = "p_" .. player.UserId
 	local ok, data = pcall(function()
 		return store:GetAsync(key)
@@ -25,6 +37,7 @@ local function loadPlayer(player: Player)
 end
 
 local function savePlayer(player: Player)
+	if not studioApisAllowed() then return end
 	local profile = TimeService.getProfile(player)
 	if not profile then return end
 	local key = "p_" .. player.UserId

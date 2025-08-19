@@ -54,8 +54,8 @@ local function makeTrigger(name: string, pos: Vector3)
     return t
 end
 
-local startA = Workspace:FindFirstChild("CourierStart") :: BasePart or makeTrigger("CourierStart", Vector3.new(-80, 1, -40))
-local endB = Workspace:FindFirstChild("CourierEnd") :: BasePart or makeTrigger("CourierEnd", Vector3.new(160, 1, 160))
+local startA = (Workspace:FindFirstChild("CourierStart") :: BasePart) or makeTrigger("CourierStart", Vector3.new(-80, 1, -40))
+local endB = (Workspace:FindFirstChild("CourierEnd") :: BasePart) or makeTrigger("CourierEnd", Vector3.new(160, 1, 160))
 
 -- Optional: visualize markers
 local function markerBillboard(parent: BasePart, text: string)
@@ -97,7 +97,7 @@ shopPrompt.RequiresLineOfSight = false
 shopPrompt.Parent = shop
 shopPrompt.Triggered:Connect(function(player)
     local Remotes = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
-    (Remotes:WaitForChild("RequestPurchase") :: RemoteEvent):FireServer("speed_boost")
+    ((Remotes:WaitForChild("RequestPurchase") :: RemoteEvent)):FireServer("speed_boost")
 end)
 
 -- Add spin wheel kiosk
@@ -119,7 +119,7 @@ spinPrompt.RequiresLineOfSight = false
 spinPrompt.Parent = spin
 spinPrompt.Triggered:Connect(function(player)
     local Remotes = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
-    (Remotes:WaitForChild("RequestSpin") :: RemoteEvent):FireServer()
+    ((Remotes:WaitForChild("RequestSpin") :: RemoteEvent)):FireServer()
 end)
 
 -- Street cleaner mission: spawn litter parts to collect
@@ -143,7 +143,7 @@ local function spawnLitter(position: Vector3)
     prompt.Triggered:Connect(function(player)
         p:Destroy()
         local Remotes = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
-        (Remotes:WaitForChild("RequestMissionComplete") :: RemoteEvent):FireServer("cleaner_1")
+        ((Remotes:WaitForChild("RequestMissionComplete") :: RemoteEvent)):FireServer("cleaner_1")
     end)
 end
 

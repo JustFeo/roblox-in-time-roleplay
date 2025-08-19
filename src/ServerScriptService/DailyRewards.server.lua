@@ -11,11 +11,18 @@ local Remotes = {
 }
 local TimeService = require(script.Parent:WaitForChild("TimeService"))
 
+local function ymd(dt: DateTime)
+	local u = dt:ToUniversalTime()
+	return u.Year, u.Month, u.Day
+end
+
 local function isNewDay(lastIso: string?): boolean
 	if not lastIso then return true end
 	local last = DateTime.fromIsoDate(lastIso)
 	local now = DateTime.now()
-	return last.Date.Year ~= now.Date.Year or last.Date.Day ~= now.Date.Day or last.Date.Month ~= now.Date.Month
+	local ly, lm, ld = ymd(last)
+	local ny, nm, nd = ymd(now)
+	return ly ~= ny or lm ~= nm or ld ~= nd
 end
 
 Remotes.SubmitPromoCode.OnServerEvent:Connect(function(player: Player, code: string)

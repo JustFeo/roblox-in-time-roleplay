@@ -12,8 +12,24 @@ local Remotes = {
     Notify = RemotesFolder:WaitForChild("Notify") :: RemoteEvent,
 }
 
-local courierStart = Workspace:WaitForChild("CourierStart") :: BasePart
-local courierEnd = Workspace:WaitForChild("CourierEnd") :: BasePart
+local function waitForOrCreate(name: string, pos: Vector3)
+    local t = Workspace:FindFirstChild(name)
+    if t and t:IsA("BasePart") then
+        return t
+    end
+    local p = Instance.new("Part")
+    p.Name = name
+    p.Anchored = true
+    p.CanCollide = false
+    p.Transparency = 1
+    p.Size = Vector3.new(6,6,6)
+    p.Position = pos
+    p.Parent = Workspace
+    return p
+end
+
+local courierStart = waitForOrCreate("CourierStart", Vector3.new(-80, 3, -40))
+local courierEnd = waitForOrCreate("CourierEnd", Vector3.new(160, 3, 160))
 
 local carrying: {[Player]: boolean} = {}
 
