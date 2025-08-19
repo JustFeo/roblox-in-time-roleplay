@@ -48,6 +48,32 @@ notifyFrame.TextScaled = true
 notifyFrame.Text = ""
 notifyFrame.Parent = screen
 
+local bankLabel = Instance.new("TextLabel")
+bankLabel.Name = "BankLabel"
+bankLabel.AnchorPoint = Vector2.new(0,0)
+bankLabel.Position = UDim2.fromScale(0.02, 0.10)
+bankLabel.Size = UDim2.fromOffset(220, 32)
+bankLabel.BackgroundTransparency = 0.2
+bankLabel.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+bankLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+bankLabel.Font = Enum.Font.Gotham
+bankLabel.TextScaled = true
+bankLabel.Text = "Bank: 0:00:00"
+bankLabel.Parent = screen
+
+local wantedLabel = Instance.new("TextLabel")
+wantedLabel.Name = "WantedLabel"
+wantedLabel.AnchorPoint = Vector2.new(0,0)
+wantedLabel.Position = UDim2.fromScale(0.02, 0.16)
+wantedLabel.Size = UDim2.fromOffset(180, 28)
+wantedLabel.BackgroundTransparency = 0.2
+wantedLabel.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
+wantedLabel.TextColor3 = Color3.fromRGB(255, 120, 120)
+wantedLabel.Font = Enum.Font.GothamBold
+wantedLabel.TextScaled = true
+wantedLabel.Text = ""
+wantedLabel.Parent = screen
+
 local missionFrame = Instance.new("Frame")
 missionFrame.Name = "Missions"
 missionFrame.AnchorPoint = Vector2.new(1, 0)
@@ -90,6 +116,18 @@ local function updateTimeLabel(seconds: number)
 end
 
 Remotes.TimeChanged.OnClientEvent:Connect(updateTimeLabel)
+
+Remotes.HudState.OnClientEvent:Connect(function(state)
+    local b = tonumber(state and state.banked) or 0
+    bankLabel.Text = "Bank: " .. formatSeconds(b)
+    if state and state.wanted then
+        wantedLabel.Text = "WANTED"
+        wantedLabel.BackgroundTransparency = 0.1
+    else
+        wantedLabel.Text = ""
+        wantedLabel.BackgroundTransparency = 0.2
+    end
+end)
 
 Remotes.Notify.OnClientEvent:Connect(function(message: string)
     notifyFrame.Text = message

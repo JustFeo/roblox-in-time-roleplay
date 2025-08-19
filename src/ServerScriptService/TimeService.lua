@@ -13,8 +13,10 @@ local Remotes = {
 	SubmitPromoCode = RemotesFolder:WaitForChild("SubmitPromoCode") :: RemoteEvent,
 	TimeChanged = RemotesFolder:WaitForChild("TimeChanged") :: RemoteEvent,
 	Notify = RemotesFolder:WaitForChild("Notify") :: RemoteEvent,
+	HudState = RemotesFolder:FindFirstChild("HudState") or Instance.new("RemoteEvent", RemotesFolder),
 	GetProfile = RemotesFolder:WaitForChild("GetProfile") :: RemoteFunction,
 }
+Remotes.HudState.Name = "HudState"
 
 local Types = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Types"))
 local RateLimiter = require(script.Parent:WaitForChild("RateLimiter"))
@@ -24,11 +26,23 @@ local playerRate = RateLimiter.new(12, 3)
 
 local STARTER_TIME_SECONDS = 15 * 60 -- 15 minutes to visibly verify changes
 local MIN_TICK = 1
+local WANTED_DURATION = 120
+
+local function fireHud(player: Player)
+	local profile = PlayerProfiles[player]
+	if not profile then return end
+	local hud = {
+		banked = profile.BankedSeconds or 0,
+		wanted = (profile.WantedEndClock or 0) > os.clock(),
+	}
+	Remotes.HudState:FireClient(player, hud)
+end
 
 local function sendTime(player: Player)
 	local profile = PlayerProfiles[player]
 	if profile then
 		Remotes.TimeChanged:FireClient(player, profile.TimeSeconds)
+		fireHud(player)
 	end
 end
 
@@ -67,6 +81,31 @@ local function trySpendTime(player: Player, seconds: number): boolean
 	return true
 end
 
+-- Banking
+local function depositTime(player: Player, seconds: number): boolean
+	if not trySpendTime(player, seconds) then return false end
+	local profile = PlayerProfiles[player]
+	if not profile then return false end
+	profile.BankedSeconds = (profile.BankedSeconds or 0) + seconds
+	Remotes.Notify:FireClient(player, string.format("Deposited %ds", seconds))
+	sendTime(player)
+	return true
+end
+
+local function withdrawTime(player: Player, seconds: number): boolean
+	local profile = PlayerProfiles[player]
+	if not profile then return false end
+	local banked = profile.BankedSeconds or 0
+	if banked < seconds then
+		Remotes.Notify:FireClient(player, "Not enough in bank")
+		return false
+	end
+	profile.BankedSeconds = banked - seconds
+	profile.TimeSeconds += seconds
+	sendTime(player)
+	return true
+end
+
 -- Public API
 local TimeService = {}
 
@@ -80,6 +119,14 @@ end
 
 function TimeService.trySpendTime(player: Player, seconds: number): boolean
 	return trySpendTime(player, seconds)
+end
+
+function TimeService.deposit(player: Player, seconds: number): boolean
+	return depositTime(player, seconds)
+end
+
+function TimeService.withdraw(player: Player, seconds: number): boolean
+	return withdrawTime(player, seconds)
 end
 
 -- Expose GetProfile RemoteFunction
@@ -111,7 +158,9 @@ Players.PlayerAdded:Connect(function(player: Player)
 		UserId = player.UserId,
 		DisplayName = player.DisplayName,
 		TimeSeconds = STARTER_TIME_SECONDS,
+		BankedSeconds = 0,
 		LastDailyClaimISO = nil,
+		WantedEndClock = nil,
 	}
 	sendTime(player)
 end)

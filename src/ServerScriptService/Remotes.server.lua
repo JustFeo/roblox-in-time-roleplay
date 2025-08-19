@@ -39,6 +39,7 @@ ensureEvent("RequestDailyClaim")
 ensureEvent("RequestSpin")
 ensureEvent("TimeChanged")
 ensureEvent("Notify")
+ensureEvent("HudState")
 ensureFunc("GetProfile")
 
 

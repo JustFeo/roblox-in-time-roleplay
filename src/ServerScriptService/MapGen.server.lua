@@ -4,6 +4,7 @@
 
 local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
 
 local function ensureBase()
     if Workspace:FindFirstChild("Baseplate") then return end
@@ -17,6 +18,15 @@ local function ensureBase()
     base.Parent = Workspace
 end
 ensureBase()
+
+-- Cinematic lighting inspired by "In Time"
+Lighting.Ambient = Color3.fromRGB(120, 140, 160)
+Lighting.OutdoorAmbient = Color3.fromRGB(120, 140, 160)
+Lighting.Brightness = 2.2
+Lighting.EnvironmentDiffuseScale = 0.6
+Lighting.EnvironmentSpecularScale = 0.8
+Lighting.ClockTime = 14
+Lighting.FogEnd = 800
 
 local function makeBuilding(pos: Vector3, size: Vector3, color: Color3)
     local p = Instance.new("Part")

@@ -5,8 +5,12 @@ export type PlayerTimeProfile = {
 	DisplayName: string,
 	-- remaining time in seconds
 	TimeSeconds: number,
+	-- time stored in bank (safe)
+	BankedSeconds: number?,
 	-- ISO timestamp string of last daily reward claim
 	LastDailyClaimISO: string?,
+	-- wanted end timestamp (os.clock-based seconds), nil if not wanted
+	WantedEndClock: number?,
 }
 
 export type Mission = {
