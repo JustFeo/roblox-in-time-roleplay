@@ -1,11 +1,9 @@
 --!strict
 
--- Server-authoritative time currency system.
--- Counts down every second. Players can earn time via missions and spend time in shops.
+-- Server-authoritative time currency system as a ModuleScript
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local HttpService = game:GetService("HttpService")
 
 local RemotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local Remotes = {
@@ -17,23 +15,15 @@ local Remotes = {
 	Notify = RemotesFolder:WaitForChild("Notify") :: RemoteEvent,
 	GetProfile = RemotesFolder:WaitForChild("GetProfile") :: RemoteFunction,
 }
+
 local Types = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Types"))
+local RateLimiter = require(script.Parent:WaitForChild("RateLimiter"))
 
 local PlayerProfiles: {[Player]: Types.PlayerTimeProfile} = {}
-local playerRate = require(script.Parent:WaitForChild("RateLimiter")).new(12, 3)
+local playerRate = RateLimiter.new(12, 3)
 
-local STARTER_TIME_SECONDS = 5 * 60 -- 5 minutes starter time
+local STARTER_TIME_SECONDS = 15 * 60 -- 15 minutes to visibly verify changes
 local MIN_TICK = 1
-
-local function isoNow(): string
-	return os.date("!%Y-%m-%dT%H:%M:%SZ")
-end
-
-local function clamp(n: number, min: number, max: number): number
-	if n < min then return min end
-	if n > max then return max end
-	return n
-end
 
 local function sendTime(player: Player)
 	local profile = PlayerProfiles[player]
@@ -77,7 +67,7 @@ local function trySpendTime(player: Player, seconds: number): boolean
 	return true
 end
 
--- Expose API table for other server scripts
+-- Public API
 local TimeService = {}
 
 function TimeService.getProfile(player: Player): Types.PlayerTimeProfile?
@@ -92,7 +82,7 @@ function TimeService.trySpendTime(player: Player, seconds: number): boolean
 	return trySpendTime(player, seconds)
 end
 
--- Remotes
+-- Expose GetProfile RemoteFunction
 Remotes.GetProfile.OnServerInvoke = function(player: Player)
 	local p = PlayerProfiles[player]
 	if not p then return nil end
@@ -104,13 +94,7 @@ Remotes.GetProfile.OnServerInvoke = function(player: Player)
 	}
 end
 
--- Mission completion will be validated in MissionService; this just awards time
-Remotes.RequestMissionComplete.OnServerEvent:Connect(function(player: Player, payload)
-	-- Do nothing here. MissionService performs validation and awards time.
-	if not playerRate:allow(player) then return end
-end)
-
--- Main countdown loop
+-- Passive countdown loop
 task.spawn(function()
 	while true do
 		for player, profile in pairs(PlayerProfiles) do

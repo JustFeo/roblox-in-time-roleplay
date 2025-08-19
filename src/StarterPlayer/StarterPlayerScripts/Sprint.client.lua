@@ -5,8 +5,8 @@ local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 
-local BASE_SPEED = 18
-local SPRINT_SPEED = 26
+local BASE_SPEED = 22
+local SPRINT_SPEED = 32
 
 local function applyBaseSpeed()
 	local char = player.Character or player.CharacterAdded:Wait()

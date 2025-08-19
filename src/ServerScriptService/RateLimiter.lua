@@ -9,7 +9,7 @@ export type RateLimiter = {
 	limit: number,
 	windowSeconds: number,
 	playerToHits: {[Player]: {timestamps: {number}}},
-	allow: (self: RateLimiter, player: Player, cost?: number) -> boolean,
+	allow: (self: RateLimiter, player: Player, cost: number?) -> boolean,
 }
 
 function RateLimiter.new(limit: number, windowSeconds: number): RateLimiter
