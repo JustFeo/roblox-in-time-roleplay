@@ -1,0 +1,23 @@
+# Roblox / Rojo
+*.rbxl
+*.rbxlx
+*.rbxm
+*.rbxmx
+*.rbxl.place.lua
+*.rbxlx.project.json
+*.lock
+
+# Tools
+/Packages/
+/include/
+/.vscode/
+/.idea/
+.DS_Store
+
+# Node / misc
+node_modules/
+dist/
+build/
+coverage/
+
+
