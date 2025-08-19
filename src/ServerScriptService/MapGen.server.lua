@@ -5,14 +5,18 @@
 local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
 
-local base = Instance.new("Part")
-base.Anchored = true
-base.Size = Vector3.new(600, 2, 600)
-base.Position = Vector3.new(0, 0, 0)
-base.Name = "Baseplate"
-base.Material = Enum.Material.Concrete
-base.Color = Color3.fromRGB(70, 70, 70)
-base.Parent = Workspace
+local function ensureBase()
+    if Workspace:FindFirstChild("Baseplate") then return end
+    local base = Instance.new("Part")
+    base.Anchored = true
+    base.Size = Vector3.new(600, 2, 600)
+    base.Position = Vector3.new(0, 0, 0)
+    base.Name = "Baseplate"
+    base.Material = Enum.Material.Concrete
+    base.Color = Color3.fromRGB(70, 70, 70)
+    base.Parent = Workspace
+end
+ensureBase()
 
 local function makeBuilding(pos: Vector3, size: Vector3, color: Color3)
     local p = Instance.new("Part")
@@ -26,11 +30,13 @@ local function makeBuilding(pos: Vector3, size: Vector3, color: Color3)
     p.Parent = Workspace
 end
 
-for x = -260, 260, 60 do
-    for z = -260, 260, 60 do
-        if math.abs(x) > 20 or math.abs(z) > 20 then
-            local tint = Color3.fromRGB(150 + math.random(0,60), 160 + math.random(0,60), 200)
-            makeBuilding(Vector3.new(x, 1, z), Vector3.new(30, math.random(25,70), 30), tint)
+if #Workspace:GetChildren() < 20 then
+    for x = -260, 260, 60 do
+        for z = -260, 260, 60 do
+            if math.abs(x) > 20 or math.abs(z) > 20 then
+                local tint = Color3.fromRGB(150 + math.random(0,60), 160 + math.random(0,60), 200)
+                makeBuilding(Vector3.new(x, 1, z), Vector3.new(30, math.random(25,70), 30), tint)
+            end
         end
     end
 end
@@ -48,8 +54,8 @@ local function makeTrigger(name: string, pos: Vector3)
     return t
 end
 
-local startA = makeTrigger("CourierStart", Vector3.new(-80, 1, -40))
-local endB = makeTrigger("CourierEnd", Vector3.new(160, 1, 160))
+local startA = Workspace:FindFirstChild("CourierStart") :: BasePart or makeTrigger("CourierStart", Vector3.new(-80, 1, -40))
+local endB = Workspace:FindFirstChild("CourierEnd") :: BasePart or makeTrigger("CourierEnd", Vector3.new(160, 1, 160))
 
 -- Optional: visualize markers
 local function markerBillboard(parent: BasePart, text: string)

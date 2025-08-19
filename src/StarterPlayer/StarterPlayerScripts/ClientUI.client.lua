@@ -111,27 +111,33 @@ local function createButton(text: string, y: number, onClick: () -> ())
     btn.Font = Enum.Font.Gotham
     btn.Text = text
     btn.Parent = missionFrame
-    btn.MouseButton1Click:Connect(onClick)
+    btn.MouseButton1Click:Connect(function()
+        -- Guard against nil onClick
+        local ok, err = pcall(onClick)
+        if not ok and err then
+            warn("Button click error:", err)
+        end
+    end)
 end
 
 createButton("Start Courier Run", 36, function()
-    Remotes.RequestMissionStart:FireServer("courier_1")
+    (Remotes.RequestMissionStart :: RemoteEvent):FireServer("courier_1")
 end)
 
 createButton("Complete Courier Run", 72, function()
-    Remotes.RequestMissionComplete:FireServer("courier_1")
+    (Remotes.RequestMissionComplete :: RemoteEvent):FireServer("courier_1")
 end)
 
 createButton("Street Cleaner", 108, function()
-    Remotes.RequestMissionStart:FireServer("cleaner_1")
+    (Remotes.RequestMissionStart :: RemoteEvent):FireServer("cleaner_1")
 end)
 
 createButton("Redeem WELCOME code", 144, function()
-    Remotes.SubmitPromoCode:FireServer("WELCOME")
+    (Remotes.SubmitPromoCode :: RemoteEvent):FireServer("WELCOME")
 end)
 
 createButton("Claim Daily", 180, function()
-    Remotes.RequestDailyClaim:FireServer()
+    (Remotes.RequestDailyClaim :: RemoteEvent):FireServer()
 end)
 
 -- Spin wheel quick key: press 2
