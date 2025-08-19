@@ -30,7 +30,16 @@ local function makeBuilding(pos: Vector3, size: Vector3, color: Color3)
     p.Parent = Workspace
 end
 
-if #Workspace:GetChildren() < 20 then
+-- Avoid re-spawning every PlaySolo cycle, but ensure buildings are present
+local existingBuildings = Workspace:GetChildren()
+local buildingCount = 0
+for _, inst in ipairs(existingBuildings) do
+    if inst:IsA("BasePart") and inst.Name == "Building" then
+        buildingCount += 1
+    end
+end
+
+if buildingCount < 10 then
     for x = -260, 260, 60 do
         for z = -260, 260, 60 do
             if math.abs(x) > 20 or math.abs(z) > 20 then
@@ -96,8 +105,9 @@ shopPrompt.HoldDuration = 0
 shopPrompt.RequiresLineOfSight = false
 shopPrompt.Parent = shop
 shopPrompt.Triggered:Connect(function(player)
-    local Remotes = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
-    ((Remotes:WaitForChild("RequestPurchase") :: RemoteEvent)):FireServer("speed_boost")
+    local remotesFolder = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
+    local purchaseEvent = remotesFolder:WaitForChild("RequestPurchase") :: RemoteEvent
+    purchaseEvent:FireServer("speed_boost")
 end)
 
 -- Add spin wheel kiosk
@@ -118,8 +128,9 @@ spinPrompt.HoldDuration = 0
 spinPrompt.RequiresLineOfSight = false
 spinPrompt.Parent = spin
 spinPrompt.Triggered:Connect(function(player)
-    local Remotes = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
-    ((Remotes:WaitForChild("RequestSpin") :: RemoteEvent)):FireServer()
+    local remotesFolder = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
+    local spinEvent = remotesFolder:WaitForChild("RequestSpin") :: RemoteEvent
+    spinEvent:FireServer()
 end)
 
 -- Street cleaner mission: spawn litter parts to collect
@@ -142,8 +153,9 @@ local function spawnLitter(position: Vector3)
     prompt.Parent = p
     prompt.Triggered:Connect(function(player)
         p:Destroy()
-        local Remotes = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
-        ((Remotes:WaitForChild("RequestMissionComplete") :: RemoteEvent)):FireServer("cleaner_1")
+        local remotesFolder = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
+        local completeEvent = remotesFolder:WaitForChild("RequestMissionComplete") :: RemoteEvent
+        completeEvent:FireServer("cleaner_1")
     end)
 end
 
