@@ -5,6 +5,7 @@
 local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local function ensureBase()
     if Workspace:FindFirstChild("Baseplate") then return end
@@ -20,13 +21,27 @@ end
 ensureBase()
 
 -- Cinematic lighting inspired by "In Time"
-Lighting.Ambient = Color3.fromRGB(120, 140, 160)
-Lighting.OutdoorAmbient = Color3.fromRGB(120, 140, 160)
-Lighting.Brightness = 2.2
+Lighting.Ambient = Color3.fromRGB(110, 130, 150)
+Lighting.OutdoorAmbient = Color3.fromRGB(110, 130, 150)
+Lighting.Brightness = 2.4
 Lighting.EnvironmentDiffuseScale = 0.6
 Lighting.EnvironmentSpecularScale = 0.8
 Lighting.ClockTime = 14
 Lighting.FogEnd = 800
+
+-- Post processing
+local cc = Instance.new("ColorCorrectionEffect")
+cc.TintColor = Color3.fromRGB(210, 230, 255)
+cc.Saturation = 0.05
+cc.Brightness = 0.03
+cc.Contrast = 0.08
+cc.Parent = Lighting
+
+local blur = Instance.new("DepthOfFieldEffect")
+blur.FarIntensity = 0.2
+blur.FocusDistance = 75
+blur.InFocusRadius = 30
+blur.Parent = Lighting
 
 local function makeBuilding(pos: Vector3, size: Vector3, color: Color3)
     local p = Instance.new("Part")
