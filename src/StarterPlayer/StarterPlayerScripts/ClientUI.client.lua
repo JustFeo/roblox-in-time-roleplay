@@ -104,6 +104,37 @@ local function line(parent: Instance)
 end
 line(missionFrame)
 
+-- Minimal actions panel for bank
+local bankActions = Instance.new("Frame")
+bankActions.Name = "BankActions"
+bankActions.AnchorPoint = Vector2.new(0, 0)
+bankActions.Position = UDim2.fromScale(0.02, 0.22)
+bankActions.Size = UDim2.fromOffset(260, 70)
+bankActions.BackgroundTransparency = 0.2
+bankActions.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+bankActions.Parent = screen
+
+local function miniButton(parent: Instance, text: string, x: number, onClick: () -> ())
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.fromOffset(120, 30)
+    b.Position = UDim2.fromOffset(x, 6)
+    b.BackgroundColor3 = Color3.fromRGB(35,35,50)
+    b.TextColor3 = Color3.fromRGB(255,255,255)
+    b.TextScaled = true
+    b.Font = Enum.Font.Gotham
+    b.Text = text
+    b.Parent = parent
+    b.MouseButton1Click:Connect(onClick)
+end
+
+miniButton(bankActions, "+60s Bank", 6, function()
+    Remotes.RequestDeposit:FireServer(60)
+end)
+
+miniButton(bankActions, "-60s Bank", 134, function()
+    Remotes.RequestWithdraw:FireServer(60)
+end)
+
 local function formatSeconds(s: number): string
     local hours = math.floor(s / 3600)
     local minutes = math.floor((s % 3600) / 60)

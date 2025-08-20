@@ -173,4 +173,39 @@ for i = 1, 10 do
     spawnLitter(Vector3.new(math.random(-200, 200), 1, math.random(-200, 200)))
 end
 
+-- Add Time Bank building and prompt
+local bank = Instance.new("Part")
+bank.Name = "TimeBank"
+bank.Anchored = true
+bank.Size = Vector3.new(24, 16, 24)
+bank.Position = Vector3.new(-140, 8, -120)
+bank.Material = Enum.Material.SmoothPlastic
+bank.Color = Color3.fromRGB(30, 30, 60)
+bank.Parent = Workspace
+markerBillboard(bank, "Time Bank")
+
+local depositPrompt = Instance.new("ProximityPrompt")
+depositPrompt.ActionText = "Deposit 60s"
+depositPrompt.ObjectText = "Bank"
+depositPrompt.KeyboardKeyCode = Enum.KeyCode.H
+depositPrompt.HoldDuration = 0
+depositPrompt.RequiresLineOfSight = false
+depositPrompt.Parent = bank
+depositPrompt.Triggered:Connect(function(player)
+    local remotesFolder = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
+    (remotesFolder:WaitForChild("RequestDeposit") :: RemoteEvent):FireServer(60)
+end)
+
+local withdrawPrompt = Instance.new("ProximityPrompt")
+withdrawPrompt.ActionText = "Withdraw 60s"
+withdrawPrompt.ObjectText = "Bank"
+withdrawPrompt.KeyboardKeyCode = Enum.KeyCode.J
+withdrawPrompt.HoldDuration = 0
+withdrawPrompt.RequiresLineOfSight = false
+withdrawPrompt.Parent = bank
+withdrawPrompt.Triggered:Connect(function(player)
+    local remotesFolder = Workspace.Parent.ReplicatedStorage:WaitForChild("Remotes")
+    (remotesFolder:WaitForChild("RequestWithdraw") :: RemoteEvent):FireServer(60)
+end)
+
 
